@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<h1>Edit Profile for {{ user.username }}</h1>
+
+<div class = "form-group">
+    <form method = "POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button class="btn btn-secondary" type="submit" >done</button>
+</div>
+<a href="{% url 'profile' request.user.id %}">Cancel</a>
+{% endblock %}

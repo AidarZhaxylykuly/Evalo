@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<h1>{{ profile.user.username }}</h1> 
+<h4>Name: {{ profile.name}} </h4> 
+<h4>Surname: {{ profile.surname}} <h4>
+
+{% if profile.profile_picture %}
+    <img src="{{ profile.profile_picture.url }}" 
+         alt="Profile Picture" 
+         style="max-width: 180px;">
+{% else %}
+    <p>No picture available.</p>
+{% endif %}
+
+{% if profile.bio %}
+    <p>{{ profile.bio }}</p>
+{% else %}
+    <p>No bio available.</p>
+{% endif %}
+
+{% if profile.gpa %}
+    <p>My GPA: {{ profile.gpa }}</p>
+{% else %}
+    <p>No gpa available.</p>
+{% endif %}
+
+
+<a href="{% url 'profile-edit' %}">Edit Profile</a> <br/>
+
+<strong>Followers:</strong><br/>
+{% for follow in profile.user.followers.all %}
+    @{{ follow.follower }}<br/>
+{% empty %}
+    <p>No followers yet.</p>
+{% endfor %}
+<br/>
+
+<strong>Following:</strong><br/>
+{% for follow in profile.user.following.all %}
+    @{{ follow.following }}<br/>
+{% empty %}
+    <p>Not following anyone yet.</p>
+{% endfor %}
+<br/>
+
+{% if profile.user.id != user.id %}
+ {% if is_follower %}
+        <form method="post" action="{% url 'unfollow_user' profile.user.id %}">
+            {% csrf_token %}
+            <button type="submit">Unfollow</button>
+        </form>
+    {% else %}
+        <form method="post" action="{% url 'follow_user' profile.user.id %}">
+            {% csrf_token %}
+            <button type="submit">Follow</button>
+        </form>
+    {% endif %}
+
+    <br/>
+
+{% endif %}
+{% endblock %}
