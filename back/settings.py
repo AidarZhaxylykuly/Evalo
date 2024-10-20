@@ -37,7 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+<<<<<<< HEAD
     'users',
+=======
+>>>>>>> cfa098778cb058a365196890fb78ce70dab833e8
 ]
 
 MIDDLEWARE = [
@@ -106,7 +109,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
+<<<<<<< HEAD
 TIME_ZONE = 'Asia/Almaty'
+=======
+TIME_ZONE = 'UTC'
+>>>>>>> cfa098778cb058a365196890fb78ce70dab833e8
 
 USE_I18N = True
 
@@ -116,6 +123,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
+<<<<<<< HEAD
 import os
 
 MEDIA_URL = '/media/'
@@ -123,12 +131,18 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+=======
+STATIC_URL = 'static/'
+>>>>>>> cfa098778cb058a365196890fb78ce70dab833e8
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+<<<<<<< HEAD
 
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 
+=======
+>>>>>>> cfa098778cb058a365196890fb78ce70dab833e8
