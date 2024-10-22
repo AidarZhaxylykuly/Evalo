@@ -7,7 +7,7 @@ class Profile(models.Model):
     name = models.CharField(max_length=100)
     surname = models.CharField(max_length=100)
     bio = models.TextField(blank=True, null=True)
-    gpa = models.FloatField()
+    gpa = models.FloatField(default=0.0)
 
     def __str__(self):
         return f'{self.user.username} Profile'

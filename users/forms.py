@@ -1,5 +1,5 @@
 from django import forms
-from .models import Profile
+from .models import Profile, TestsFolder
 
 class ProfileForm(forms.ModelForm):
     class Meta:
@@ -12,3 +12,8 @@ class ProfileForm(forms.ModelForm):
             'surname': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter your last name'}),
             'gpa': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'placeholder': 'GPA (e.g. 3.75)'})
         }
+
+class FolderForm(forms.ModelForm):
+    class Meta:
+        model = TestsFolder
+        fields = ['folder_name']
