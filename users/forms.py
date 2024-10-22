@@ -1,5 +1,6 @@
 from django import forms
 from .models import Profile, TestsFolder
+from tests.models import Test
 
 class ProfileForm(forms.ModelForm):
     class Meta:
@@ -16,4 +17,11 @@ class ProfileForm(forms.ModelForm):
 class FolderForm(forms.ModelForm):
     class Meta:
         model = TestsFolder
-        fields = ['folder_name']
+        fields = ['folder_name', 'test_blanks']  # Include test_blanks field
+
+    test_blanks = forms.ModelMultipleChoiceField(
+        queryset=Test.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
+

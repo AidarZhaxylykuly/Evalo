@@ -60,6 +60,7 @@ def unfollow_user(request, user_id):
     Follow.objects.filter(follower=request.user, following=user_to_unfollow).delete()
     return redirect('profile', pk=user_id)
 
+@login_required
 def create_folder(request):
     if request.method == 'POST':
         form = FolderForm(request.POST)
@@ -67,6 +68,7 @@ def create_folder(request):
             folder = form.save(commit=False)
             folder.owner = request.user
             folder.save()
+            form.save_m2m()
             return redirect('folder-list')
     else:
         form = FolderForm()
