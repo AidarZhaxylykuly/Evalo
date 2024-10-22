@@ -1,0 +1,22 @@
+<h2>Тест: {{ test.title }}</h2>
+<p><strong>Описание:</strong> {{ test.description }}</p>
+<p><strong>Автор:</strong> {{ test.author }}</p>
+<p><strong>Общее количество очков:</strong> {{ test.total_points }}</p>
+<p><strong>Приватный:</strong> {{ test.is_private }}</p>
+<p><strong>Категория:</strong> {{ test.test_category }}</p>
+<p><strong>Время начала:</strong> {{ test.starting_datetime }}</p>
+<p><strong>Время завершения:</strong> {{ test.submission_datetime }}</p>
+<p><strong>Вопросы:</strong></p>
+<ul>
+    {% for question in test.question_list.all %}
+    <li>{{ question.content }}</li>
+    {% endfor %}
+</ul>
+<p><strong>Код доступа:</strong> {{ test.entrance_code }}</p>
+<p><strong>Разрешенные пользователи:</strong></p>
+<ul>
+    {% for user in test.allowed_users.all %}
+    <li>{{ user.username }}</li>
+    {% endfor %}
+</ul>
+<p><strong>Лайки:</strong> {{ test.like.count }}</p>
