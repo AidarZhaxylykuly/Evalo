@@ -32,7 +32,7 @@
 
 <strong>Followers:</strong><br/>
 {% for follow in profile.user.followers.all %}
-    @{{ follow.follower }}<br/>
+    <a href="{% url 'profile' follow.follower.id %}">{{ follow.follower.username }}</a><br/>
 {% empty %}
     <p>No followers yet.</p>
 {% endfor %}
@@ -40,7 +40,7 @@
 
 <strong>Following:</strong><br/>
 {% for follow in profile.user.following.all %}
-    @{{ follow.following }}<br/>
+    <a href="{% url 'profile' follow.following.id %}">{{ follow.following.username }}</a><br/>
 {% empty %}
     <p>Not following anyone yet.</p>
 {% endfor %}

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from tests.models import Test
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -7,7 +8,7 @@ class Profile(models.Model):
     name = models.CharField(max_length=100)
     surname = models.CharField(max_length=100)
     bio = models.TextField(blank=True, null=True)
-    gpa = models.FloatField()
+    gpa = models.FloatField(default=0.0)
 
     def __str__(self):
         return f'{self.user.username} Profile'
@@ -23,7 +24,7 @@ class Follow(models.Model):
 class TestsFolder(models.Model):
     folder_name = models.CharField(max_length=255)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    # test_blanks = models.ManyToManyField('Test', blank=True) 
+    test_blanks = models.ManyToManyField(Test, blank=True) 
 
     def __str__(self):
         return f'Folder: {self.folder_name} by {self.owner.username}'
