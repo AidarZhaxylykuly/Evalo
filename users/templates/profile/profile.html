@@ -5,7 +5,7 @@
 
 <h1>{{ profile.user.username }}</h1> 
 <h4>Name: {{ profile.name}} </h4> 
-<h4>Surname: {{ profile.surname}} <h4>
+<h4>Surname: {{ profile.surname}} </h4>
 
 {% if profile.profile_picture %}
     <img src="{{ profile.profile_picture.url }}" 
@@ -28,8 +28,10 @@
 {% endif %}
 
 
-<a href="{% url 'profile-edit' %}">Edit Profile</a> <br/>
-
+<button class="btn btn-secondary" onclick="location.href='{% url 'profile-edit' %}'">Edit Profile</button> <br/>
+    <br>
+    <br>
+<div style="position: fixed; top: 150px; right: 200px; z-index: 1000;">
 <strong>Followers:</strong><br/>
 {% for follow in profile.user.followers.all %}
     @{{ follow.follower }}<br/>
@@ -45,6 +47,7 @@
     <p>Not following anyone yet.</p>
 {% endfor %}
 <br/>
+</div>
 
 {% if profile.user.id != user.id %}
  {% if is_follower %}

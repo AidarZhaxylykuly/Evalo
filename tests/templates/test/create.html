@@ -1,6 +1,127 @@
-<h2>Создать новый тест</h2>
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Создать</button>
-</form>
+{% extends "base.html" %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create a New Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .answer-group {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .answer-group input[type="text"] {
+            flex: 1;
+            margin-right: 10px;
+        }
+        .remove-answer {
+            margin-left: 10px;
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .add-answer, .add-question, .btn-submit {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>Create a New Test</h2>
+    <form method="POST" action="{% url 'create_test' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="title">Test Title:</label>
+            <input type="text" id="title" name="title" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" required></textarea>
+        </div>
+
+        <div id="questions-container">
+            <h4>Questions</h4>
+            <div class="question-group">
+                <div class="form-group">
+                    <label for="question">Question:</label>
+                    <input type="text" name="questions[][content]" required>
+                    <div class="answers-container">
+                        <h5>Answers</h5>
+                        <div class="answer-group">
+                            <input type="text" name="questions[][answers][]" placeholder="Answer" required>
+                            <input type="checkbox" name="questions[][correct_answer][]" value="1"> Correct Answer
+                            <button type="button" class="remove-answer">Remove Answer</button>
+                        </div>
+                        <button type="button" class="add-answer">+ Add Answer</button>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="add-question">+ Add Question</button>
+        </div>
+
+        <button type="submit" class="btn-submit">Create Test</button>
+    </form>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Functionality to add questions
+        document.querySelector('.add-question').addEventListener('click', function() {
+            const questionsContainer = document.getElementById('questions-container');
+            const newQuestionGroup = document.createElement('div');
+            newQuestionGroup.classList.add('question-group');
+            newQuestionGroup.innerHTML = `
+                <div class="form-group">
+                    <label for="question">Question:</label>
+                    <input type="text" name="questions[][content]" required>
+                    <div class="answers-container">
+                        <h5>Answers</h5>
+                        <div class="answer-group">
+                            <input type="text" name="questions[][answers][]" placeholder="Answer" required>
+                            <input type="checkbox" name="questions[][correct_answer][]" value="1"> Correct Answer
+                            <button type="button" class="remove-answer">Remove Answer</button>
+                        </div>
+                        <button type="button" class="add-answer">+ Add Answer</button>
+                    </div>
+                </div>
+            `;
+            questionsContainer.appendChild(newQuestionGroup);
+        });
+
+        // Functionality to add answers
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('add-answer')) {
+                const answersContainer = event.target.parentElement;
+                const newAnswerGroup = document.createElement('div');
+                newAnswerGroup.classList.add('answer-group');
+                newAnswerGroup.innerHTML = `
+                    <input type="text" name="questions[][answers][]" placeholder="Answer" required>
+                    <input type="checkbox" name="questions[][correct_answer][]" value="1"> Correct Answer
+                    <button type="button" class="remove-answer">Remove Answer</button>
+                `;
+                answersContainer.appendChild(newAnswerGroup);
+            }
+            // Functionality to remove answers
+            if (event.target.classList.contains('remove-answer')) {
+                event.target.parentElement.remove();
+            }
+        });
+    });
+    </script>
+</body>
+</html>
+{% endblock %}

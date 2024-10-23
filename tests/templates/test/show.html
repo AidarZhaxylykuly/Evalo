@@ -1,3 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+
 <h2>Тест: {{ test.title }}</h2>
 <p><strong>Описание:</strong> {{ test.description }}</p>
 <p><strong>Автор:</strong> {{ test.author }}</p>
@@ -20,3 +23,5 @@
     {% endfor %}
 </ul>
 <p><strong>Лайки:</strong> {{ test.like.count }}</p>
+
+{% endblock %}

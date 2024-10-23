@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm , UserChangeForm
 from django.urls import reverse_lazy
 from .forms import ProfileForm
 from django.contrib.auth.models import User
-from .models import Profile , Follow , TestsFolder
+from .models import Profile, Follow, TestsFolder
 
 
 class UserRegister(generic.CreateView):

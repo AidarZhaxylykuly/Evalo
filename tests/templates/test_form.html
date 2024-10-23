@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create a New Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .answer-group {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .answer-group input[type="text"] {
+            flex: 1;
+            margin-right: 10px;
+        }
+        .remove-answer {
+            margin-left: 10px;
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .add-answer, .add-question, .btn-submit {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>Creation of a New Test</h2>
+    <form method="POST" action="{% url 'create_test' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="title">Test Title:</label>
+            <input type="text" id="title" name="title" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="entrance_code">Entrance Code:</label>
+            <input type="text" id="entrance_code" name="entrance_code" required>
+        </div>
+
+        <div class="form-group">
+            <label for="starting_datetime">Starting Date and Time:</label>
+            <input type="datetime-local" id="starting_datetime" name="starting_datetime" required>
+        </div>
+        <div class="form-group">
+            <label for="submission_datetime">Submission Date and Time:</label>
+            <input type="datetime-local" id="submission_datetime" name="submission_datetime" required>
+        </div>
+        <div class="form-group">
+        <label for="test_category">Category:</label>
+            <select id="test_category" name="test_category" required>
+                <option value="">Select a category</option>
+                {% for category in categories %}
+                    <option value="{{ category.id }}">{{ category.name }}</option>
+                {% endfor %}
+            </select>
+         </div>
+
+        <div id="questions-container">
+    <h4>Questions</h4>
+    <div class="question-group">
+        <button type="button" class="add-question" style="margin-bottom: 20px">+ Add Question</button>
+        <div class="form-group" style="border: 2px solid black; padding-bottom: 20px; padding-top: 10px; background-color: burlywood">
+            <label for="question">Question:</label>
+            <input type="text" name="question_0_content" required>
+
+            <!-- Points input for each question -->
+            <div class="form-group">
+                <label for="points" style="margin-left: 20px; margin-top: 10px">Points:</label>
+                <input type="number" name="question_0_points" required>
+            </div>
+
+            <div class="answers-container">
+                <h5>Answers</h5>
+                <button type="button" class="add-answer">+ Add Answer</button>
+                <div class="answer-group">
+                    <input type="text" name="question_0_answer_0" placeholder="Answer" required>
+                    <input type="checkbox" name="question_0_correct_answer_0" value="1"> Correct Answer
+                    <button type="button" class="remove-answer">Remove Answer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+        <button type="submit" class="btn-submit">Create Test</button>
+    </form>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    let questionIndex = 0;
+
+    // Functionality to add questions
+    document.querySelector('.add-question').addEventListener('click', function() {
+        questionIndex++;
+        const questionsContainer = document.getElementById('questions-container');
+        const newQuestionGroup = document.createElement('div');
+        newQuestionGroup.classList.add('question-group');
+        newQuestionGroup.innerHTML = `
+            <div class="form-group" style="border: 2px solid black; padding-bottom: 20px; padding-top: 10px; background-color: burlywood">
+                <label for="question">Question:</label>
+                <input type="text" name="question_${questionIndex}_content" required>
+
+                <!-- Points input for each new question -->
+                <div class="form-group">
+                    <label for="points">Points:</label>
+                    <input type="number" name="question_${questionIndex}_points" required>
+                </div>
+
+                <div class="answers-container">
+                    <h5>Answers</h5>
+                    <button type="button" class="add-answer">+ Add Answer</button>
+                    <div class="answer-group">
+                        <input type="text" name="question_${questionIndex}_answer_0" placeholder="Answer" required>
+                        <input type="checkbox" name="question_${questionIndex}_correct_answer_0" value="1"> Correct Answer
+                        <button type="button" class="remove-answer">Remove Answer</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        questionsContainer.appendChild(newQuestionGroup);
+    });
+
+    // Functionality to add answers
+    document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('add-answer')) {
+            const answersContainer = event.target.parentElement;
+            const answerIndex = answersContainer.querySelectorAll('.answer-group').length;
+            const questionIndex = answersContainer.parentElement.querySelector('input[type="text"]').name.match(/\d+/)[0];
+            const newAnswerGroup = document.createElement('div');
+            newAnswerGroup.classList.add('answer-group');
+            newAnswerGroup.innerHTML = `
+                <input type="text" name="question_${questionIndex}_answer_${answerIndex}" placeholder="Answer" required>
+                <input type="checkbox" name="question_${questionIndex}_correct_answer_${answerIndex}" value="1"> Correct Answer
+                <button type="button" class="remove-answer">Remove Answer</button>
+            `;
+            answersContainer.appendChild(newAnswerGroup);
+        }
+        // Functionality to remove answers
+        if (event.target.classList.contains('remove-answer')) {
+            event.target.parentElement.remove();
+        }
+    });
+});
+
+    </script>
+</body>
+</html>
+{% endblock %}

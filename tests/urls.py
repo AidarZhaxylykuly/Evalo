@@ -1,11 +1,15 @@
 from django.urls import path
-from . import views
+from .views import create_test, show_test, edit_test, delete_test, add_user_to_test, delete_user_from_test, pass_test, \
+    submit_test
 
 urlpatterns = [
-    path('create/', views.create_question, name='create_question'),
-    path('edit/<int:pk>/', views.edit_question, name='edit_question'),
-    path('show/<int:pk>/', views.show_question, name='show_question'),
-    path('test/create/', views.create_test, name='create_test'),
-    path('test/edit/<int:pk>/', views.edit_test, name='edit_test'),
-    path('test/show/<int:pk>/', views.show_test, name='show_test'),
+    path('create/', create_test, name='create_test'),
+    path('test/<int:test_id>/', show_test, name='test_detail'),
+    path('test/<int:test_id>/edit/', edit_test, name='edit_test'),
+    path('test/<int:test_id>/delete/', delete_test, name='delete_test'),
+    path('test/<int:test_id>/add_user/', add_user_to_test, name='add_user_to_test'),
+    path('test/<int:test_id>/delete_user/', delete_user_from_test, name='delete_user_from_test'),
+
+    path('<int:test_id>/pass/', pass_test, name='pass_test'),
+    path('<int:test_id>/submit/', submit_test, name='submit_test'),
 ]
