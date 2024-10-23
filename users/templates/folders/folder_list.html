@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>My Folders</h1>
+
+  {% if folders %}
+    <ul>
+      {% for folder in folders %}
+        <li>{{ folder.folder_name }}</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>You don't have any folders yet.</p>
+  {% endif %}
+
+  <a href="{% url 'create-folder' %}">Create New Folder</a>
+{% endblock %}

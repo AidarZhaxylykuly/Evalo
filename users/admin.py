@@ -3,4 +3,9 @@ from .models import Profile, Follow, TestsFolder
 
 admin.site.register(Profile)
 admin.site.register(Follow)
-admin.site.register(TestsFolder)
+
+@admin.register(TestsFolder)
+class TestsFolderAdmin(admin.ModelAdmin):
+    list_display = ['folder_name', 'owner']
+    search_fields = ['folder_name', 'owner__username']
+    autocomplete_fields = ['owner']

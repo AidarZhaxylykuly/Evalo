@@ -34,3 +34,13 @@ class Test(models.Model):
 
     def __str__(self):
         return self.title
+    
+class AnswerBlank(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    test = models.ForeignKey(Test, on_delete=models.CASCADE)
+    answers = models.JSONField(default=dict)
+    score = models.FloatField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'AnswerBlank for {self.user.username} on {self.test.title}'
