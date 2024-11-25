@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container text-center mt-5">
+    <h1>Welcome to Evalo!</h1>
+    <p class="lead">Explore, connect, and grow with our community.</p>
+
+    <div class="mt-4">
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' user.id %}" class="btn btn-primary">Go to your Profile</a>
+            <form action="{% url 'logout' %}" method="post" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Logout</button>
+            </form>
+        {% else %}
+            <a href="{% url 'register' %}" class="btn btn-success me-2">Register</a>
+            <a href="{% url 'login' %}" class="btn btn-secondary">Login</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

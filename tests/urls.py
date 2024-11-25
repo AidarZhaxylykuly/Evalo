@@ -1,9 +1,10 @@
 from django.urls import path
-from .views import create_test, show_test, edit_test, delete_test, add_user_to_test, delete_user_from_test, pass_test, \
+from .views import home,create_test, show_test, edit_test, delete_test, add_user_to_test, delete_user_from_test, pass_test, \
     submit_test
 
 urlpatterns = [
-    path('create/', create_test, name='create_test'),
+    path('', home, name='home'),
+    path('test/create/', create_test, name='create_test'),
     path('test/<int:test_id>/', show_test, name='test_detail'),
     path('test/<int:test_id>/edit/', edit_test, name='edit_test'),
     path('test/<int:test_id>/delete/', delete_test, name='delete_test'),

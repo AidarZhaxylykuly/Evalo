@@ -8,6 +8,8 @@ from django.utils import timezone
 from .models import Test, Question, Category, AnswerBlank
 from django.contrib.auth.decorators import login_required
 
+def home(request):
+    return render(request, 'home.html')
 
 @login_required
 def create_test(request):
