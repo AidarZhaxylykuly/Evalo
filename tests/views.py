@@ -83,7 +83,7 @@ def create_test(request):
 @login_required
 def show_test(request, test_id):
     test = get_object_or_404(Test, id=test_id)
-    return render(request, 'test_detail.html', {'test': test})
+    return render(request, 'test/show.html', {'test': test})
 
 
 @login_required

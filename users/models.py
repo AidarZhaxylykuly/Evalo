@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
@@ -23,7 +24,7 @@ class Follow(models.Model):
 class TestsFolder(models.Model):
     folder_name = models.CharField(max_length=255)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    # test_blanks = models.ManyToManyField('Test', blank=True) 
+    test_blanks = models.ManyToManyField('tests.Test', blank=True) 
 
     def __str__(self):
         return f'Folder: {self.folder_name} by {self.owner.username}'

@@ -2,9 +2,10 @@ from django.shortcuts import render , redirect , get_object_or_404
 from django.views import generic
 from django.contrib.auth.forms import UserCreationForm , UserChangeForm 
 from django.urls import reverse_lazy
-from .forms import ProfileForm
+from .forms import ProfileForm, FolderForm
 from django.contrib.auth.models import User
 from .models import Profile, Follow, TestsFolder
+from tests.models import Test
 
 
 class UserRegister(generic.CreateView):
@@ -47,3 +48,33 @@ def unfollow_user(request, user_id):
     user_to_unfollow = User.objects.get(id=user_id)
     Follow.objects.filter(follower=request.user, following=user_to_unfollow).delete()
     return redirect('home')
+
+
+def create_folder(request):
+    if request.method == 'POST':
+        form = FolderForm(request.POST)
+        if form.is_valid():
+            folder = form.save(commit=False)
+            folder.owner = request.user
+            folder.save()
+            form.save_m2m()
+            return redirect('my-folders')
+    else:
+        form = FolderForm()
+    return render(request, 'folders/folder_form.html', {'form': form})
+
+
+def user_tests(request):
+    created_tests = Test.objects.filter(author=request.user)
+    passed_tests = Test.objects.filter(allowed_users=request.user)
+
+    context = {
+        'created_tests': created_tests,
+        'passed_tests': passed_tests,
+    }
+    return render(request, 'tests/user_tests.html', context)
+
+
+def my_folders(request):
+    folders = TestsFolder.objects.filter(owner=request.user)
+    return render(request, 'folders/folder_list.html', {'folders': folders})

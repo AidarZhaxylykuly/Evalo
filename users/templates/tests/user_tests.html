@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>My Tests</h1>
+
+  <h2>Created Tests</h2>
+  {% if created_tests %}
+    <ul>
+      {% for test in created_tests %}
+      <li><a href="{% url 'test_detail' test.id %}">{{ test.title }} (Category: {{ test.test_category.name }})</a> 
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>You haven't created any tests yet.</p>
+  {% endif %}
+
+  <h2>Passed Tests</h2>
+  {% if passed_tests %}
+    <ul>
+      {% for test in passed_tests %}
+        <li><a href="{% url 'test_detail' test.id %}">{{ test.title }} (Category: {{ test.test_category.name }})</a></li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>You haven't passed any tests yet.</p>
+  {% endif %}
+
+  <a href="{% url 'create-folder' %}">Create Folder</a> | 
+  <a href="{% url 'my-folders' %}">My Folders</a>
+{% endblock %}

@@ -1,5 +1,5 @@
 from django.urls import path 
-from .views import UserRegister, EditProfileView , profile , follow_user , unfollow_user
+from .views import UserRegister, EditProfileView , profile , follow_user , unfollow_user, user_tests, create_folder, my_folders
 
 
 urlpatterns = [
@@ -8,5 +8,7 @@ urlpatterns = [
     path('profile/edit/', EditProfileView.as_view(), name = 'profile-edit'),
     path('profile/<int:user_id>/follow/', follow_user, name='follow_user'),
     path('profile/<int:user_id>/unfollow/', unfollow_user, name='unfollow_user'),
-    path('profile/1/', profile, name='home'),
+    path('my-tests/', user_tests, name='user-tests'),
+    path('folders/create/', create_folder, name='create-folder'),
+    path('folders/', my_folders, name='my-folders'),
 ]

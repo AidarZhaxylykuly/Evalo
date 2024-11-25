@@ -20,7 +20,12 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav ms-auto">
-            {% comment %} add test,etc {% endcomment %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'user-tests' %}">My tests</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'create_test' %}">Create test</a>
+            </li>
           </ul>
           
           <ul class="navbar-nav mr-auto">
