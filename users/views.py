@@ -6,8 +6,46 @@ from .forms import ProfileForm, FolderForm
 from django.contrib.auth.models import User
 from .models import Profile, Follow, TestsFolder
 from tests.models import Test
+from rest_framework import viewsets, permissions, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .serializers import ProfileSerializer, UserSerializer
+from .permissions import IsAdmin
 
 
+class UserRegisterAPIView(APIView):
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response({"message": "User registered successfully"}, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class LogoutView(APIView):
+    def post(self, request):
+        return Response({"message": "Successfully logged out"}, status=200)
+    
+    
+class ProtectedView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        return Response({"message": "This is a protected view."})
+    
+class AdminOnlyView(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+
+    def get(self, request):
+        return Response({"message": "This is an admin-only view."})
+
+
+class ProfileViewSet(viewsets.ModelViewSet):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
 class UserRegister(generic.CreateView):
     form_class = UserCreationForm
     template_name = 'registration/registration.html'
@@ -17,6 +55,7 @@ class UserRegister(generic.CreateView):
         user = form.save()
         Profile.objects.create(user=user)  
         return super().form_valid(form)
+    
 
 class EditProfileView(generic.UpdateView):
     form_class = ProfileForm
