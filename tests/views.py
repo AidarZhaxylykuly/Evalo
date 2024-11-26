@@ -139,30 +139,23 @@ def pass_test(request, test_id):
 @login_required
 def submit_test(request, test_id):
     test = get_object_or_404(Test, id=test_id)
-    if request.method == 'POST':
-        answers = request.POST.get('answers', {})
-        score = 0
-        correct_answers = {}
+    user_answers = {}
 
-        # Calculate the score
-        for question_id, selected_answers in answers.items():
-            question = get_object_or_404(Question, id=question_id)
-            # Check the correct answers
-            correct_answer_list = question.correct_answers
+    for question in test.question_list.all():
+        answers_for_question = request.POST.getlist(f'answers_{question.id}[]')
 
-            for answer in selected_answers:
-                if answer in correct_answer_list:
-                    score += question.points  # Assuming points are assigned to the question
+        if answers_for_question:
+            user_answers[question.id] = answers_for_question
 
-        # Save the answer blank
-        answer_blank = AnswerBlank.objects.create(
-            User=request.user,
-            Test=test,
-            Answers=answers,
-            Score=score
-        )
 
-        # Redirect to a result page or display a success message
-        return redirect('test_detail', test.id)  # Change as needed
+    total_score = 0
 
-    return redirect('test_detail', test.id)  # Handle the case where it’s not a POST
+    answer_blank = AnswerBlank.objects.create(
+        User=request.user,
+        Test=test,
+        Answers=user_answers,  #  {question_id: [user_answers]}
+        Score=total_score
+    )
+
+    return redirect('test_detail', test_id)
+

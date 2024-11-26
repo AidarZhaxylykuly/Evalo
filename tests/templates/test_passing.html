@@ -1,22 +1,25 @@
 {% extends "base.html" %}
-
 {% block content %}
-<h2>{{ test.title }}</h2>
-<p>{{ test.description }}</p>
-
+    <h2>Test: {{ test.title }}</h2>
+    <p>Info: {{ test.description }}</p>
+    <br>
 <form method="POST" action="{% url 'submit_test' test.id %}">
     {% csrf_token %}
     {% for question in test.question_list.all %}
-        <div class="question">
-            <h5>{{ question.content }}</h5>
+        <div class="question-group" style=" border: 2px solid black; margin-bottom: 20px; padding-bottom: 10px; padding-top: 10px;">
+            <h4 style="padding-left: 20px">{{ forloop.counter }}. {{ question.content }}</h4>
+
             {% for answer in question.answer_list %}
-                <div>
-                    <input type="checkbox" name="answers[{{ question.id }}][]" value="{{ answer }}">
-                    {{ answer }}
+                <div class="answer-option">
+                    <label style="padding-left: 20px">
+                        <input type="checkbox" name="answers_{{ question.id }}[]" value="{{ answer }}">
+                        {{ answer }}
+                    </label>
                 </div>
             {% endfor %}
         </div>
     {% endfor %}
-    <button type="submit">Submit Test</button>
+
+    <button type="submit" class="btn btn-secondary">Submit Test</button>
 </form>
 {% endblock %}
