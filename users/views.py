@@ -88,4 +88,47 @@ def user_tests(request):
 @login_required
 def my_folders(request):
     folders = TestsFolder.objects.filter(owner=request.user)
+<<<<<<< Updated upstream
     return render(request, 'folders/folder_list.html', {'folders': folders})
+=======
+    return render(request, 'folders/folder_list.html', {'folders': folders})
+
+def folder_detail(request, folder_id):
+    folder = get_object_or_404(TestsFolder, id=folder_id, owner=request.user)
+    tests = folder.test_blanks.all()
+    context = {
+        'folder': folder,
+        'tests': tests,
+    }
+    return render(request, 'folders/folder_detail.html', context)
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponseForbidden
+from django.contrib.auth.decorators import login_required
+from .forms import FolderForm
+from .models import TestsFolder
+
+@login_required
+def edit_folder(request, folder_id):
+    folder = get_object_or_404(TestsFolder, id=folder_id, owner=request.user)
+
+    if request.method == 'POST':
+        form = FolderForm(request.POST, instance=folder)
+        if form.is_valid():
+            form.save()
+            return redirect('folder-detail', folder_id=folder.id)
+    else:
+        form = FolderForm(instance=folder)
+
+    return render(request, 'folders/folder_form.html', {'form': form, 'folder': folder})
+
+@login_required
+def delete_folder(request, folder_id):
+    folder = get_object_or_404(TestsFolder, id=folder_id, owner=request.user)
+    
+    if request.method == 'POST':
+        folder.delete()
+        return redirect('my-folders')
+    
+    return render(request, 'folders/folder_confirm_delete.html', {'folder': folder})
+>>>>>>> Stashed changes

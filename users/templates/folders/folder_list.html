@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 {% extends 'base.html' %}
 
 {% block content %}
@@ -15,3 +16,24 @@
 
   <a href="{% url 'create-folder' %}">Create New Folder</a>
 {% endblock %}
+=======
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>My Folders</h1>
+
+{% if folders %}
+    <ul>
+    {% for folder in folders %}
+        <li>
+            <a href="{% url 'folder-detail' folder.id %}">{{ folder.folder_name }}</a>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>You don't have any folders yet.</p>
+{% endif %}
+
+<a href="{% url 'create-folder' %}">Create New Folder</a>
+{% endblock %}
+>>>>>>> Stashed changes

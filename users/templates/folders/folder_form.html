@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 {% extends 'base.html' %}
 
 {% block content %}
@@ -8,3 +9,20 @@
     <button type="submit" class="btn btn-primary">Create Folder</button>
 </form>
 {% endblock %}
+=======
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>{% if folder %}Edit{% else %}Create{% endif %} Folder</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">{% if folder %}Update{% else %}Create{% endif %} Folder</button>
+</form>
+
+{% if folder %}
+    <a href="{% url 'delete-folder' folder.id %}" class="btn btn-danger">Delete Folder</a>
+{% endif %}
+
+{% endblock %}
+>>>>>>> Stashed changes
