@@ -1,3 +1,59 @@
 myenv/
 db.sqlite3
 
+myenv/ 
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Environment variables
+.env
+*.env
+
+
+# IDE configurations
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Pytest cache
+.cache/
+pytest_cache/
+.pytest_cache/
+
+
+# Local configurations
+*.local
+*.pyproj
+
+# Virtual environments
+venv/
+env/
+venv.bak/
+env.bak/
+
+# Jupyter Notebook files
+.ipynb_checkpoints
+
+# MacOS specific files
+.DS_Store
+
+# Windows specific files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*.pyc
+*.pyo
+__pycache__
+db.sqlite3
+.env
+*.log
+*.pot
+*.pyc
+*.pyo
+*.swp
+myenv/
+venv/
+
+identifier.sqlite
