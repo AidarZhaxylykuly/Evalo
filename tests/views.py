@@ -8,58 +8,10 @@ from django.utils import timezone
 from .models import Test, Question, Category, AnswerBlank
 from django.contrib.auth.decorators import login_required
 
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import api_view, permission_classes
-
 def home(request):
     return render(request, 'home.html')
 
-@api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])
 @login_required
-@swagger_auto_schema(
-    operation_summary="Создание теста",
-    operation_description="Создаёт новый тест с категориями, вопросами и ответами.",
-    request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'title': openapi.Schema(type=openapi.TYPE_STRING, description='Название теста'),
-            'description': openapi.Schema(type=openapi.TYPE_STRING, description='Описание теста'),
-            'starting_datetime': openapi.Schema(type=openapi.TYPE_STRING, format='date-time', description='Дата и время начала теста'),
-            'submission_datetime': openapi.Schema(type=openapi.TYPE_STRING, format='date-time', description='Дата и время окончания теста'),
-            'is_private': openapi.Schema(type=openapi.TYPE_BOOLEAN, description='Приватный тест или нет'),
-            'entrance_code': openapi.Schema(type=openapi.TYPE_STRING, description='Код доступа для приватного теста'),
-            'test_category': openapi.Schema(type=openapi.TYPE_INTEGER, description='ID категории теста'),
-            'questions': openapi.Schema(
-                type=openapi.TYPE_ARRAY,
-                items=openapi.Schema(
-                    type=openapi.TYPE_OBJECT,
-                    properties={
-                        'content': openapi.Schema(type=openapi.TYPE_STRING, description='Содержание вопроса'),
-                        'points': openapi.Schema(type=openapi.TYPE_NUMBER, description='Баллы за вопрос'),
-                        'answers': openapi.Schema(
-                            type=openapi.TYPE_ARRAY,
-                            items=openapi.Schema(
-                                type=openapi.TYPE_OBJECT,
-                                properties={
-                                    'answer': openapi.Schema(type=openapi.TYPE_STRING, description='Вариант ответа'),
-                                    'is_correct': openapi.Schema(type=openapi.TYPE_BOOLEAN, description='Правильный ответ или нет')
-                                }
-                            )
-                        )
-                    }
-                )
-            )
-        },
-        required=['title', 'description', 'starting_datetime', 'submission_datetime', 'test_category']
-    ),
-    responses={
-        302: "Перенаправление на страницу теста после успешного создания",
-        400: "Ошибка валидации данных"
-    }
-)
 def create_test(request):
     categories = Category.objects.all()
     if request.method == 'POST':
@@ -129,44 +81,15 @@ def create_test(request):
 
     return render(request, 'test_form.html', {'categories': categories})
 
-@api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])
+
+
 @login_required
-@swagger_auto_schema(
-    operation_summary="Просмотр теста",
-    operation_description="Просматривает информацию о тесте по его ID.",
-    responses={
-        200: "Страница теста с подробной информацией",
-        404: "Тест не найден"
-    }
-)
 def show_test(request, test_id):
     test = get_object_or_404(Test, id=test_id)
     return render(request, 'test/show.html', {'test': test})
 
-@api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])
+
 @login_required
-@swagger_auto_schema(
-    operation_summary="Редактирование теста",
-    operation_description="Редактирует существующий тест по его ID.",
-    request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'title': openapi.Schema(type=openapi.TYPE_STRING, description='Название теста'),
-            'description': openapi.Schema(type=openapi.TYPE_STRING, description='Описание теста'),
-            'starting_datetime': openapi.Schema(type=openapi.TYPE_STRING, format='date-time', description='Дата и время начала теста'),
-            'submission_datetime': openapi.Schema(type=openapi.TYPE_STRING, format='date-time', description='Дата и время окончания теста'),
-            'is_private': openapi.Schema(type=openapi.TYPE_BOOLEAN, description='Приватный тест или нет'),
-            'entrance_code': openapi.Schema(type=openapi.TYPE_STRING, description='Код доступа для приватного теста'),
-        },
-        required=['title', 'description', 'starting_datetime', 'submission_datetime']
-    ),
-    responses={
-        302: "Перенаправление на страницу теста после успешного редактирования",
-        404: "Тест не найден"
-    }
-)
 def edit_test(request, test_id):
     test = get_object_or_404(Test, id=test_id)
 
@@ -184,40 +107,15 @@ def edit_test(request, test_id):
 
     return render(request, 'test_form.html', {'test': test})
 
-@api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])
+
 @login_required
-@swagger_auto_schema(
-    operation_summary="Удаление теста",
-    operation_description="Удаляет тест по его ID.",
-    responses={
-        302: "Перенаправление после успешного удаления",
-        404: "Тест не найден"
-    }
-)
 def delete_test(request, test_id):
     test = get_object_or_404(Test, id=test_id)
     test.delete()
     return redirect('some_view_after_delete')
 
-@api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])
+
 @login_required
-@swagger_auto_schema(
-    operation_summary="Добавление пользователя к тесту",
-    operation_description="Добавляет пользователя к списку пользователей, которые могут проходить тест.",
-    request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'user_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='ID пользователя'),
-        },
-        required=['user_id']
-    ),
-    responses={
-        200: "Пользователь успешно добавлен",
-        404: "Тест или пользователь не найдены"
-    }
-)
 def add_user_to_test(request, test_id):
     test = get_object_or_404(Test, id=test_id)
     user_id = request.POST.get('user_id')
@@ -225,24 +123,8 @@ def add_user_to_test(request, test_id):
     test.allowed_users.add(user)
     return JsonResponse({'status': 'success'})
 
-@api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])
+
 @login_required
-@swagger_auto_schema(
-    operation_summary="Удаление пользователя из теста",
-    operation_description="Удаляет пользователя из списка пользователей, которые могут проходить тест.",
-    request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'user_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='ID пользователя'),
-        },
-        required=['user_id']
-    ),
-    responses={
-        200: "Пользователь успешно удалён",
-        404: "Тест или пользователь не найдены"
-    }
-)
 def delete_user_from_test(request, test_id):
     test = get_object_or_404(Test, id=test_id)
     user_id = request.POST.get('user_id')
@@ -252,39 +134,14 @@ def delete_user_from_test(request, test_id):
 
 
 #####################for AnswerBlank model(test passing)##############################
-@api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])
+
 @login_required
-@swagger_auto_schema(
-    operation_summary="Прохождение теста",
-    operation_description="Возвращает страницу прохождения теста.",
-    responses={
-        200: "Страница прохождения теста",
-        404: "Тест не найден"
-    }
-)
 def pass_test(request, test_id):
     test = get_object_or_404(Test, id=test_id)
     return render(request, 'test_passing.html', {'test': test})
 
-@api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])
+
 @login_required
-@swagger_auto_schema(
-    operation_summary="Отправка результатов теста",
-    operation_description="Отправляет результаты прохождения теста и вычисляет баллы пользователя.",
-    request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'answers': openapi.Schema(type=openapi.TYPE_OBJECT, description='Ответы пользователя по вопросам теста')
-        },
-        required=['answers']
-    ),
-    responses={
-        302: "Перенаправление на страницу с результатами теста после успешной отправки",
-        400: "Ошибка в запросе"
-    }
-)
 def submit_test(request, test_id):
     if request.method == 'POST':
         test = get_object_or_404(Test, id=test_id)
@@ -307,21 +164,13 @@ def submit_test(request, test_id):
             Score=total_score
         )
 
+
         return redirect('test_result', test_id=test.id)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
-@api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])
+
 @login_required
-@swagger_auto_schema(
-    operation_summary="Просмотр результата теста",
-    operation_description="Просматривает результаты прохождения теста пользователем или автором теста.",
-    responses={
-        200: "Страница с результатами теста",
-        404: "Тест не найден"
-    }
-)
 def test_result(request, test_id):
     test = Test.objects.get(id=test_id)
 
@@ -358,3 +207,5 @@ def test_result(request, test_id):
             'result_data': result_data,
             'test': test
         })
+
+

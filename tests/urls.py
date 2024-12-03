@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import home,create_test, show_test, edit_test, delete_test, add_user_to_test, delete_user_from_test, pass_test, \
-    submit_test
+    submit_test, test_result
 
 urlpatterns = [
     path('', home, name='home'),
@@ -13,4 +13,5 @@ urlpatterns = [
 
     path('<int:test_id>/pass/', pass_test, name='pass_test'),
     path('<int:test_id>/submit/', submit_test, name='submit_test'),
+    path('test/<int:test_id>/result/', test_result, name='test_result'),
 ]
