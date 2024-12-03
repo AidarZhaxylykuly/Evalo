@@ -8,11 +8,7 @@ class Profile(models.Model):
     name = models.CharField(max_length=100)
     surname = models.CharField(max_length=100)
     bio = models.TextField(blank=True, null=True)
-<<<<<<< Updated upstream
-    gpa = models.FloatField(default=0.0)
-=======
-    gpa = models.FloatField(null=True, blank=True)
->>>>>>> Stashed changes
+    gpa = models.FloatField(null=True, blank=True, default = 0.0)
 
     def __str__(self):
         return f'{self.user.username} Profile'

@@ -88,9 +88,6 @@ def user_tests(request):
 @login_required
 def my_folders(request):
     folders = TestsFolder.objects.filter(owner=request.user)
-<<<<<<< Updated upstream
-    return render(request, 'folders/folder_list.html', {'folders': folders})
-=======
     return render(request, 'folders/folder_list.html', {'folders': folders})
 
 def folder_detail(request, folder_id):
@@ -131,4 +128,3 @@ def delete_folder(request, folder_id):
         return redirect('my-folders')
     
     return render(request, 'folders/folder_confirm_delete.html', {'folder': folder})
->>>>>>> Stashed changes

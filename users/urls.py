@@ -1,13 +1,7 @@
-<<<<<<< Updated upstream
-from django.urls import path 
-from .views import UserRegister, EditProfileView , profile , follow_user , unfollow_user, home, user_tests, create_folder, my_folders
-
-=======
 from django.urls import path, include 
-from .views import  ProtectedView, AdminOnlyView, UserRegisterAPIView, ProfileViewSet, UserRegister, LogoutView, EditProfileView, delete_folder, edit_folder , profile , follow_user , unfollow_user, user_tests, create_folder, my_folders, folder_detail
+from .views import  ProtectedView, AdminOnlyView, UserRegisterAPIView, ProfileViewSet, UserRegister, LogoutView, EditProfileView, delete_folder, edit_folder , profile , follow_user , unfollow_user, user_tests, create_folder, my_folders, folder_detail, home
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
->>>>>>> Stashed changes
 
 
 urlpatterns = [
