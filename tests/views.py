@@ -17,7 +17,6 @@ def create_test(request):
     if request.method == 'POST':
         title = request.POST.get('title')
         description = request.POST.get('description')
-        total_points = float(request.POST.get('total_points', 0))
         starting_datetime = request.POST.get('starting_datetime')
         submission_datetime = request.POST.get('submission_datetime')
         is_private = request.POST.get('is_private') == 'on'
@@ -32,7 +31,7 @@ def create_test(request):
         test = Test.objects.create(
             title=title,
             description=description,
-            total_points=total_points,
+            total_points=0,
             starting_datetime=starting_datetime,
             submission_datetime=submission_datetime,
             is_private=is_private,
@@ -41,18 +40,17 @@ def create_test(request):
             test_category=test_category
         )
 
-        # Process questions
         question_index = 0
+        total_points = 0
         while f'question_{question_index}_content' in request.POST:
             question_content = request.POST.get(f'question_{question_index}_content')
-            question_points = request.POST.get(f'question_{question_index}_points')
+            question_points = float(request.POST.get(f'question_{question_index}_points', 0))
 
             question = Question.objects.create(
                 content=question_content,
                 points=question_points
             )
 
-            # Process answers for each question
             answer_index = 0
             answer_list = []
             correct_answers = []
@@ -72,7 +70,12 @@ def create_test(request):
 
             test.question_list.add(question)
 
+            total_points += question_points
+
             question_index += 1
+
+        test.total_points = total_points
+        test.save()
 
         return redirect('test_detail', test.id)
 
@@ -140,24 +143,72 @@ def pass_test(request, test_id):
 
 @login_required
 def submit_test(request, test_id):
-    test = get_object_or_404(Test, id=test_id)
-    user_answers = {}
+    if request.method == 'POST':
+        test = get_object_or_404(Test, id=test_id)
+        user_answers = {}
+        total_score = 0  # Переменная для подсчета очков пользователя
 
-    for question in test.question_list.all():
-        answers_for_question = request.POST.getlist(f'answers_{question.id}[]')
+        # Получаем ответы пользователя
+        for question in test.question_list.all():
+            question_id = str(question.id)
+            user_answers[question_id] = request.POST.getlist(f'answers_{question_id}[]')
 
-        if answers_for_question:
-            user_answers[question.id] = answers_for_question
+            # Проверяем правильность ответов
+            correct_answers = question.correct_answers  # Список правильных ответов
+            question_points = question.points  # Баллы за вопрос
+            if set(user_answers[question_id]) == set(correct_answers):
+                total_score += question_points  # Добавляем баллы, если ответы совпадают
+
+        # Сохраняем данные в AnswerBlank
+        AnswerBlank.objects.create(
+            User=request.user,
+            Test=test,
+            Answers=user_answers,
+            Score=total_score
+        )
+
+        # Перенаправляем на страницу результатов
+        return redirect('test_result', test_id=test.id)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 
-    total_score = 0
+@login_required
+def test_result(request, test_id):
+    test = Test.objects.get(id=test_id)
 
-    answer_blank = AnswerBlank.objects.create(
-        User=request.user,
-        Test=test,
-        Answers=user_answers,  #  {question_id: [user_answers]}
-        Score=total_score
-    )
+    is_author = test.author == request.user
 
-    return redirect('test_detail', test_id)
+    if not is_author:
+        answer_blank = AnswerBlank.objects.filter(User=request.user, Test=test).last()
+        if not answer_blank:
+            return redirect('test_list')
+
+        percentage = (answer_blank.score / test.total_points) * 100
+        return render(request, 'test_result_user.html', {
+            'answer_blank': answer_blank,
+            'test': test,
+            'percentage': percentage
+        })
+
+    else:
+        answer_blanks = AnswerBlank.objects.filter(Test=test)
+        result_data = []
+
+        for answer_blank in answer_blanks:
+            percentage = (answer_blank.Score / test.total_points) * 100
+            result_data.append({
+                'user': answer_blank.User,
+                'score': answer_blank.Score,
+                'total_points': test.total_points,
+                'percentage': percentage,
+                'timestamp': answer_blank.Timestamp,
+                'answers': answer_blank.Answers
+            })
+
+        return render(request, 'test_result_author.html', {
+            'result_data': result_data,
+            'test': test
+        })
+
 
