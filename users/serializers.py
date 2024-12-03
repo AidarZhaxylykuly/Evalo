@@ -22,7 +22,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ['id', 'user', 'bio', 'profile_picture']
+        fields = ['id', 'user','bio', 'profile_picture' , 'name','surname', 'gpa']
 
 
 class FollowSerializer(serializers.ModelSerializer):
