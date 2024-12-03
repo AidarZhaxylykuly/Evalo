@@ -146,20 +146,17 @@ def submit_test(request, test_id):
     if request.method == 'POST':
         test = get_object_or_404(Test, id=test_id)
         user_answers = {}
-        total_score = 0  # Переменная для подсчета очков пользователя
+        total_score = 0
 
-        # Получаем ответы пользователя
         for question in test.question_list.all():
             question_id = str(question.id)
             user_answers[question_id] = request.POST.getlist(f'answers_{question_id}[]')
 
-            # Проверяем правильность ответов
-            correct_answers = question.correct_answers  # Список правильных ответов
-            question_points = question.points  # Баллы за вопрос
+            correct_answers = question.correct_answers
+            question_points = question.points
             if set(user_answers[question_id]) == set(correct_answers):
-                total_score += question_points  # Добавляем баллы, если ответы совпадают
+                total_score += question_points
 
-        # Сохраняем данные в AnswerBlank
         AnswerBlank.objects.create(
             User=request.user,
             Test=test,
@@ -167,7 +164,7 @@ def submit_test(request, test_id):
             Score=total_score
         )
 
-        # Перенаправляем на страницу результатов
+
         return redirect('test_result', test_id=test.id)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
