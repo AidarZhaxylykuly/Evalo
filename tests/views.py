@@ -181,7 +181,7 @@ def test_result(request, test_id):
         if not answer_blank:
             return redirect('test_list')
 
-        percentage = (answer_blank.score / test.total_points) * 100
+        percentage = (answer_blank.Score / test.total_points) * 100
         return render(request, 'test_result_user.html', {
             'answer_blank': answer_blank,
             'test': test,

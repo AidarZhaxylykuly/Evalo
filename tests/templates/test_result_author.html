@@ -65,7 +65,7 @@
             border-radius: 4px;
             margin-bottom: 5px;">
         {% load custom_filters %}
-        {% result.answers|get_value:question.id %}
+{#        {% result.answers|get_value:question.id %}#}
             {% if question.id in result.answers and answer in result.answers|get_value:question.id %}
                 <strong>{{ answer }} (Ваш ответ)</strong>
             {% else %}
