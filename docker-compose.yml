@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # Сервис для Django
+  web:
+    build: .
+    container_name: django_web
+    command: python manage.py runserver 0.0.0.0:8000  # Команда для запуска Django
+    volumes:
+      - .:/app  # Монтируем текущую директорию в контейнер
+    ports:
+      - "8000:8000"  # Открываем порт 8000 для Django
+    depends_on:
+      - db  # Зависимость от базы данных, если она используется (например, PostgreSQL)
+
+  # Сервис для Metabase
+  metabase:
+    image: metabase/metabase
+    container_name: metabase
+    ports:
+      - "3000:3000"  # Открываем порт для Metabase
+    environment:
+      - MB_DB_FILE=/metabase.db.sqlite3  # Указываем путь к базе данных SQLite
+    volumes:
+      - ./db.sqlite3:/metabase.db.sqlite3  # Монтируем SQLite базу данных из текущей директории
+
+  # Сервис для базы данных (если используется PostgreSQL)
+  db:
+    image: postgres:latest
+    container_name: django_db
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+# Определение томов
+volumes:
+  postgres_data:

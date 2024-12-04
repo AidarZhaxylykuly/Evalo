@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{{ folder.folder_name }}</h1>
+
+<div>
+    <a href="{% url 'edit-folder' folder.id %}" class="btn btn-primary">Edit</a>
+    <a href="{% url 'delete-folder' folder.id %}" class="btn btn-danger">Delete</a>
+  </div>
+
+{% if tests %}
+    <ul>
+        {% for test in tests %}
+            <li>
+                <a href="{% url 'test_detail' test.id %}">
+                    {{ test.title }} (Category: {{ test.test_category.name }})
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No tests in this folder yet.</p>
+{% endif %}
+<a href="{% url 'my-folders' %}">Back to My Folders</a>
+{% endblock %}

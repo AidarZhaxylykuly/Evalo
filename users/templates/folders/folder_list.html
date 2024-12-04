@@ -1,17 +1,19 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h1>My Folders</h1>
+<h1>My Folders</h1>
 
-  {% if folders %}
+{% if folders %}
     <ul>
-      {% for folder in folders %}
-        <li>{{ folder.folder_name }}</li>
-      {% endfor %}
+    {% for folder in folders %}
+        <li>
+            <a href="{% url 'folder-detail' folder.id %}">{{ folder.folder_name }}</a>
+        </li>
+    {% endfor %}
     </ul>
-  {% else %}
+{% else %}
     <p>You don't have any folders yet.</p>
-  {% endif %}
+{% endif %}
 
-  <a href="{% url 'create-folder' %}">Create New Folder</a>
+<a href="{% url 'create-folder' %}">Create New Folder</a>
 {% endblock %}

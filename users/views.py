@@ -1,9 +1,11 @@
+from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import render , redirect , get_object_or_404
 from django.views import generic
 from django.contrib.auth.forms import UserCreationForm , UserChangeForm 
 from django.urls import reverse_lazy
 from .forms import ProfileForm, FolderForm
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from .models import Profile, Follow, TestsFolder
 from tests.models import Test
 from rest_framework import viewsets, permissions, status
@@ -14,6 +16,7 @@ from .permissions import IsAdmin
 
 
 class UserRegisterAPIView(APIView):
+    permission_classes = []
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         
@@ -64,7 +67,8 @@ class EditProfileView(generic.UpdateView):
     
     def get_object(self):
         return self.request.user.profile
-    
+
+
 def profile(request, pk):
     user = get_object_or_404(User, id = pk)
     profile = get_object_or_404(Profile, user=user)
@@ -76,20 +80,26 @@ def profile(request, pk):
         'users': users, 
     }
     return render(request, "profile/profile.html" , context)
-    
+
+@login_required 
 def follow_user(request, user_id):
     user_to_follow = get_object_or_404(User, id=user_id)
     if not Follow.objects.filter(follower=request.user, following=user_to_follow).exists():
         Follow.objects.create(follower=request.user, following=user_to_follow)
     return redirect('home')
     
+@login_required
 def unfollow_user(request, user_id):
     user_to_unfollow = User.objects.get(id=user_id)
     Follow.objects.filter(follower=request.user, following=user_to_unfollow).delete()
     return redirect('home')
 
 
+@login_required
 def create_folder(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Unauthorized access"}, status=401)
+    
     if request.method == 'POST':
         form = FolderForm(request.POST)
         if form.is_valid():
@@ -113,7 +123,51 @@ def user_tests(request):
     }
     return render(request, 'tests/user_tests.html', context)
 
-
+@login_required
 def my_folders(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Unauthorized access"}, status=401)
     folders = TestsFolder.objects.filter(owner=request.user)
     return render(request, 'folders/folder_list.html', {'folders': folders})
+
+def folder_detail(request, folder_id):
+    folder = get_object_or_404(TestsFolder, id=folder_id, owner=request.user)
+    tests = folder.test_blanks.all()
+    context = {
+        'folder': folder,
+        'tests': tests,
+    }
+    return render(request, 'folders/folder_detail.html', context)
+
+@login_required
+def edit_folder(request, folder_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Unauthorized access"}, status=401)
+    
+    folder = get_object_or_404(TestsFolder, id=folder_id, owner=request.user)
+
+    if request.method == 'POST':
+        form = FolderForm(request.POST, instance=folder)
+        if form.is_valid():
+            form.save()
+            return redirect('folder-detail', folder_id=folder.id)
+    else:
+        form = FolderForm(instance=folder)
+
+    return render(request, 'folders/folder_form.html', {'form': form, 'folder': folder})
+
+@login_required
+def delete_folder(request, folder_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Unauthorized access"}, status=401)
+    
+    folder = get_object_or_404(TestsFolder, id=folder_id)
+
+    if folder.owner != request.user:
+        return HttpResponseForbidden("You do not have permission to delete this folder.")
+
+    if request.method == 'POST':
+        folder.delete()
+        return redirect('my-folders')
+    
+    return render(request, 'folders/folder_confirm_delete.html', {'folder': folder})
