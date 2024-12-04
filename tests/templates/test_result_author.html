@@ -42,8 +42,6 @@
         <div class="answers-container">
             <h5>Ответы:</h5>
             {% for question in test.question_list.all %}
-
-                <pre>Correct Answers: {{ question.correct_answers }}</pre>
                 <pre>User Answers: {{ result.answers }}</pre>
 
                 <div class="question-answer">

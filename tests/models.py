@@ -51,6 +51,9 @@ class Test(models.Model):
         related_name="liked_tests",
         blank=True)
 
+    def is_user_allowed(self, user):
+        return self.allowed_users.filter(id=user.id).exists()
+
     def __str__(self):
         return self.title
 

@@ -1,11 +1,19 @@
 import datetime
 
+from django.contrib import messages
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseForbidden
+from rest_framework import viewsets
 from django.utils import timezone
 
 from .models import Test, Question, Category, AnswerBlank
+from .serializers import (
+    QuestionSerializer,
+    CategorySerializer,
+    TestSerializer,
+    AnswerBlankSerializer
+)
 from django.contrib.auth.decorators import login_required
 
 def home(request):
@@ -88,6 +96,42 @@ def show_test(request, test_id):
     test = get_object_or_404(Test, id=test_id)
     return render(request, 'test/show.html', {'test': test})
 
+@login_required
+def manage_allowed_users(request, test_id):
+    test = get_object_or_404(Test, id=test_id)
+
+    if request.user != test.author:
+        messages.error(request, "У вас нет прав для управления этим тестом.")
+        return redirect('show_test', test_id=test.id)
+
+    if request.method == "POST":
+        action = request.POST.get('action', 'add')
+        user_id = request.POST.get('user_id')
+
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            messages.error(request, "Пользователь не найден.")
+            return redirect('show_test', test_id=test.id)
+
+        if action == "add":
+            if user not in test.allowed_users.all():
+                test.allowed_users.add(user)
+                messages.success(request, f"Пользователь '{user.username}' добавлен.")
+            else:
+                messages.warning(request, f"Пользователь '{user.username}' уже добавлен.")
+        elif action == "remove":
+            if user in test.allowed_users.all():
+                test.allowed_users.remove(user)
+                messages.success(request, f"Пользователь '{user.username}' удалён.")
+            else:
+                messages.warning(request, f"Пользователь '{user.username}' не найден в разрешённых.")
+
+        return redirect('show_test', test_id=test.id)
+
+
+def can_access_test(user, test):
+    return test.is_user_allowed(user)
 
 @login_required
 def edit_test(request, test_id):
@@ -138,6 +182,10 @@ def delete_user_from_test(request, test_id):
 @login_required
 def pass_test(request, test_id):
     test = get_object_or_404(Test, id=test_id)
+
+    if not test.is_user_allowed(request.user):
+        return HttpResponseForbidden("Вы не имеете доступа к этому тесту.")
+
     return render(request, 'test_passing.html', {'test': test})
 
 
@@ -209,3 +257,23 @@ def test_result(request, test_id):
         })
 
 
+#####################for simple CRUD operations inside Postman(testing)##############################
+
+class QuestionViewSet(viewsets.ModelViewSet):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+
+class TestViewSet(viewsets.ModelViewSet):
+    queryset = Test.objects.all()
+    serializer_class = TestSerializer
+
+
+class AnswerBlankViewSet(viewsets.ModelViewSet):
+    queryset = AnswerBlank.objects.all()
+    serializer_class = AnswerBlankSerializer
